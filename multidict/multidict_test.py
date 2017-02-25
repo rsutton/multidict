@@ -2,9 +2,9 @@ import unittest
 from multidict import MultiDict
 
 
-class MultiDTest(unittest.TestCase):
+class MultiDictTest(unittest.TestCase):
     config = MultiDict(filename='./test.conf')
-    data = config.data
+    data = config.__dict__
 
     def setUp(self):
         pass

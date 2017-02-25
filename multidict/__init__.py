@@ -1,6 +1,9 @@
 """
 MultiDict - multi-level dictionary object
 
+Implementation of nested dictionary which can be initialized by a
+dict object or json string loaded from a file.
+
 """
 import json
 import logging
@@ -8,39 +11,22 @@ import os
 
 
 class MultiDict(object):
-    def __init__(self, filename=None, data=None, **kwargs):
-        self._filename = filename
+    def __init__(self, data=None, filename=None):
         self.logger = logging.getLogger(__name__)
 
         if filename is not None:
-            self._data = MultiDictData(data=self.load_from_file())
+            self.from_file(filename)
         elif data is not None:
-            assert isinstance(data, dict)
-            self._data = MultiDictData(data=data)
+            self.with_data(data=data)
 
-    @property
-    def data(self):
-        return self._data
+    def with_data(self, data):
+        assert isinstance(data, dict)
+        self.__dict__ = MultiDictData(data=data)
 
-    @property
-    def filename(self):
-        return self._filename
-
-    def load_from_file(self):
+    def from_file(self, filename):
         """ Load the Configuration from file """
-        if os.path.exists(self.filename):
-            fh = os.path.realpath(self.filename)
-        else:
-            msg = "Configuration file {} was not found!".format(self.filename)
-            self.logger.error(msg)
-            raise ValueError(msg)
-        try:
-            result = json.load(open(fh))
-        except ValueError as e:
-            msg = "Unable to load configuration from {}: {}".format(self.filename, e)
-            self.logger.error(msg)
-            raise ValueError(msg)
-        return result
+        fh = os.path.realpath(filename)
+        self.__dict__ = MultiDictData(data=json.load(open(fh)))
 
 
 class MultiDictData(dict):
