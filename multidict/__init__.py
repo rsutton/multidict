@@ -28,6 +28,9 @@ class MultiDict(object):
         fh = os.path.realpath(filename)
         self.__dict__ = MultiDictData(data=json.load(open(fh)))
 
+    def __str__(self):
+        return json.dumps(self.__dict__, indent=2, sort_keys=True)
+
 
 class MultiDictData(dict):
     def __init__(self, data):
